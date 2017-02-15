@@ -351,10 +351,13 @@ var Learn = {};
                     newPool.push(second);
                 }
                 children = _.sampleSize(newPool, Learn.genomeUnits - toSelect);
+                Learn.genomes = [];
                 Learn.genomes = _.union(selected, children);
                 newPool = [];
                 selected = [];
                 children = [];
+                first = null;
+                second = null;
                 // Execute next generation
                 Learn.executeGeneration();
                 /*
@@ -411,8 +414,7 @@ var Learn = {};
             var newTotal = 0.0;
             //console.log("Fitness random total: " + randTotal.toString())
             for (var i = 0; i < Learn.genomes.length; i++) {
-                var thing = Learn.genomes[i];
-                randTotal -= thing.fitness;
+                randTotal -= Learn.genomes[i].fitness;
                 if (randTotal <= 0) {
                     return Learn.genomes.splice(i, 1);
                 }
@@ -487,8 +489,7 @@ var Learn = {};
                 return;
             }
             */
-            num = Learn.genomes.indexOf(genome) + 1;
-            Learn.genome = num;
+            Learn.genome = Learn.genomes.indexOf(genome) + 1;
             tRex = Runner.instance_.tRex;
             //var obstacles = null;
             obstacles = [];
@@ -500,7 +501,7 @@ var Learn = {};
             //var val = 0;
             //console.log('Executing generation #' + Learn.generation.toString() + " and genome #" + num.toString());
             // Start the game (if first genome)
-            if (num === 1) {
+            if (Learn.genome === 1) {
                 Runner.instance_.playIntro();
                 Runner.instance_.restart();
                 //Runner.instance_.startGame();
@@ -556,7 +557,7 @@ var Learn = {};
                     outputs = [0.5];
                 }
                 val = outputs[0];
-                //console.log("Neural net output: " + val.toString());
+                console.log("Neural net output: " + val.toString());
                 if (val >= 0.55) {
                     // Jump if already not jumping
                     if (!tRex.jumping && !tRex.ducking) {
@@ -23843,7 +23844,7 @@ var Learn = {};
 
             // adds a neuron to the layer
             add: function(neuron) {
-                this.neurons[neuron.ID] = neuron || new Neuron();
+                //this.neurons[neuron.ID] = neuron || new Neuron(); //commented out to prevent memory leak: https://github.com/cazala/synaptic/issues/164
                 this.list.push(neuron);
                 this.size++;
             },
