@@ -584,6 +584,10 @@ var Learn = {};
                     if (!tRex.jumping && !tRex.ducking) {
                         tRex.setDuck(true);
                     };
+                } else {
+                    if (tRex.ducking) {
+                        tRex.setDuck(false);
+                    }
                 }
                 // When game ends, save fitness move on to next genome
                 if (Runner.instance_.crashed) {
