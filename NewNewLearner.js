@@ -310,6 +310,10 @@ var Learn = {};
                 //clear genomes
                 //console.log('Finished generation #' + Learn.generation.toString());
                 selected = _.sortBy(Learn.genomes, 'fitness').reverse();
+                obstacles = [];
+                inputs = [];
+                outputs = [];
+                newPool = [];
                 
                 while (selected.length > toSelect) {
                   selected.pop();
@@ -319,6 +323,7 @@ var Learn = {};
                 //Learn.genomes = [];
                 for (var i = Learn.genomes.length - 1; i >= 0; i -= 2) {
                     //console.log("Selecting best genomes randomly and applying evolutionary techniques...");
+                    //console.log(Learn.genomes.length);
                     first = Learn.selectBestGenomes()[0];
                     second = Learn.selectBestGenomes()[0];
 
@@ -349,7 +354,13 @@ var Learn = {};
 
                     newPool.push(first);
                     newPool.push(second);
+                    
+                    first = null;
+                    second = null;
+                    newfirst = null;
+                    newsecond = null;
                 }
+                
                 children = _.sampleSize(newPool, Learn.genomeUnits - toSelect);
                 Learn.genomes = [];
                 Learn.genomes = _.union(selected, children);
@@ -358,6 +369,9 @@ var Learn = {};
                 children = [];
                 first = null;
                 second = null;
+                newfirst = null;
+                newsecond = null;
+                
                 // Execute next generation
                 Learn.executeGeneration();
                 /*
@@ -557,10 +571,11 @@ var Learn = {};
                     outputs = [0.5];
                 }
                 val = outputs[0];
-                console.log("Neural net output: " + val.toString());
+                //console.log("Neural net output: " + val.toString());
                 if (val >= 0.55) {
                     // Jump if already not jumping
-                    if (!tRex.jumping && !tRex.ducking) {
+                    if (!tRex.jumping) {
+                    // if (!tRex.jumping && !tRex.ducking) {
                         tRex.setDuck(false);
                         tRex.startJump();
                     }
@@ -676,10 +691,7 @@ var Learn = {};
         // expected number of inputs and outputs
         Learn.buildGenome = function(inputs, outputs) {
             //Learn.ui.logger.log('Build genome '+(Learn.genomes.length+1));
-
-            var network = new Architect.Perceptron(inputs, 20, 20, outputs);
-
-            return network;
+            return new Architect.Perceptron(inputs, 20, 20, outputs);
         }
 
 
@@ -703,7 +715,6 @@ var Learn = {};
                 Learn.crossOverDataKey(netA.neurons, netB.neurons, 'bias');
                 //Learn.crossOverDataKey(netA.connections, netB.connections, 'weight');
             }
-
             return netA;
         }
 
